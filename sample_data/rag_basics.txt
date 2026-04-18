@@ -1,0 +1,6 @@
+Retrieval-Augmented Generation, or RAG, is a pattern where we search trusted documents first and then use those results to answer a question.
+Without retrieval, a language model may guess from memory and produce hallucinations.
+RAG improves groundedness by attaching evidence from source documents.
+The standard pipeline is ingest documents, chunk text, embed chunks, store vectors, retrieve relevant chunks, and then generate an answer.
+In production systems, evaluation often tracks retrieval precision, answer faithfulness, latency, and cost.
+
