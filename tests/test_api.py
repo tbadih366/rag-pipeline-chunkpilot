@@ -27,3 +27,13 @@ def test_demo_load_and_query() -> None:
     assert payload["retrieved"]
     assert "retrieved chunks" in payload["answer"].lower()
 
+
+def test_query_without_ingest_returns_empty_retrieval() -> None:
+    client.delete("/reset")
+    res = client.post(
+        "/query",
+        json={"question": "What is RAG?", "top_k": 2},
+    )
+    assert res.status_code == 200
+    payload = res.json()
+    assert payload["retrieved"] == []
