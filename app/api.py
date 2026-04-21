@@ -55,6 +55,6 @@ def reset() -> dict:
 @app.post("/demo-load", response_model=IngestResponse)
 def demo_load() -> IngestResponse:
     demo_folder = Path(__file__).resolve().parents[1] / "sample_data"
+    pipeline.reset()
     result = pipeline.ingest_folder(str(demo_folder))
     return IngestResponse(**result)
-
