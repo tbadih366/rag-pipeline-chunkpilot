@@ -62,3 +62,11 @@ class RAGPipeline:
         )
         return {"answer": "\n".join(lines), "retrieved": hits}
 
+    def save_index(self, path: str | None = None) -> str:
+        target = path or settings.index_path
+        self.store.save(target)
+        return target
+
+    def load_index(self, path: str | None = None) -> bool:
+        target = path or settings.index_path
+        return self.store.load(target)

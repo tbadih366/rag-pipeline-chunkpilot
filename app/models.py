@@ -29,3 +29,11 @@ class QueryResponse(BaseModel):
     answer: str
     retrieved: List[RetrievedChunk]
 
+
+class PersistRequest(BaseModel):
+    path: str | None = None
+
+
+class PersistResponse(BaseModel):
+    path: str
+    loaded: bool | None = None

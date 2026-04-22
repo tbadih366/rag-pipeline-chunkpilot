@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+import pickle
+from pathlib import Path
 from typing import List
 
 from sklearn.feature_extraction.text import TfidfVectorizer
@@ -61,3 +63,24 @@ class VectorStore:
             )
         return results
 
+    def save(self, path: str) -> None:
+        payload = {
+            "chunks": self._chunks,
+            "vectorizer": self._vectorizer,
+            "matrix": self._matrix,
+        }
+        target = Path(path)
+        target.parent.mkdir(parents=True, exist_ok=True)
+        with target.open("wb") as f:
+            pickle.dump(payload, f)
+
+    def load(self, path: str) -> bool:
+        target = Path(path)
+        if not target.exists():
+            return False
+        with target.open("rb") as f:
+            payload = pickle.load(f)
+        self._chunks = payload.get("chunks", [])
+        self._vectorizer = payload.get("vectorizer", TfidfVectorizer(stop_words="english"))
+        self._matrix = payload.get("matrix")
+        return True

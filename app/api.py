@@ -4,7 +4,16 @@ from pathlib import Path
 
 from fastapi import FastAPI, HTTPException
 
-from app.models import IngestRequest, IngestResponse, QueryRequest, QueryResponse, RetrievedChunk
+from app.config import settings
+from app.models import (
+    IngestRequest,
+    IngestResponse,
+    PersistRequest,
+    PersistResponse,
+    QueryRequest,
+    QueryResponse,
+    RetrievedChunk,
+)
 from app.pipeline import RAGPipeline
 
 app = FastAPI(title="RAG Pipeline API", version="1.0.0")
@@ -58,3 +67,18 @@ def demo_load() -> IngestResponse:
     pipeline.reset()
     result = pipeline.ingest_folder(str(demo_folder))
     return IngestResponse(**result)
+
+
+@app.post("/persist/save", response_model=PersistResponse)
+def persist_save(req: PersistRequest) -> PersistResponse:
+    saved_path = pipeline.save_index(req.path)
+    return PersistResponse(path=saved_path)
+
+
+@app.post("/persist/load", response_model=PersistResponse)
+def persist_load(req: PersistRequest) -> PersistResponse:
+    target_path = req.path or settings.index_path
+    loaded = pipeline.load_index(req.path)
+    if not loaded:
+        raise HTTPException(status_code=404, detail="Index file not found")
+    return PersistResponse(path=target_path, loaded=True)

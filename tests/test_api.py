@@ -37,3 +37,18 @@ def test_query_without_ingest_returns_empty_retrieval() -> None:
     assert res.status_code == 200
     payload = res.json()
     assert payload["retrieved"] == []
+
+
+def test_persist_save_and_load(tmp_path) -> None:
+    client.delete("/reset")
+    load = client.post("/demo-load")
+    assert load.status_code == 200
+
+    index_file = tmp_path / "api_index.pkl"
+    save_res = client.post("/persist/save", json={"path": str(index_file)})
+    assert save_res.status_code == 200
+
+    client.delete("/reset")
+    load_res = client.post("/persist/load", json={"path": str(index_file)})
+    assert load_res.status_code == 200
+    assert load_res.json()["loaded"] is True
